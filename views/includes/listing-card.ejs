@@ -1,0 +1,39 @@
+<%
+    // Expects: listing (lean object with avgRating/reviewCount). Also uses wishlistIds, categories, currUser.
+    const cardId = String(listing._id);
+    const isSaved = wishlistIds.includes(cardId);
+    const cardCat = categories.find(function (c) { return c.key === listing.category; });
+    const nightly = Number(listing.price) || 0;
+    const withGst = Math.round(nightly * 1.18);
+    const imgUrl = listing.image && listing.image.url ? listing.image.url : "/img/placeholder.svg";
+%>
+<article class="rn-card">
+  <div class="rn-card-media">
+    <a href="/listings/<%= cardId %>" class="rn-card-imglink" aria-label="View <%= listing.title %>">
+      <img src="<%= imgUrl %>" alt="<%= listing.title %>" loading="lazy" onerror="this.onerror=null;this.src='/img/placeholder.svg'">
+    </a>
+    <% if (cardCat) { %>
+      <span class="rn-chip"><i class="fa-solid <%= cardCat.icon %>"></i> <%= cardCat.label %></span>
+    <% } %>
+    <form class="rn-heart-form" method="POST" action="/listings/<%= cardId %>/wishlist" data-wishlist-form>
+      <button type="submit" class="rn-heart <%= isSaved ? 'is-saved' : '' %>" aria-pressed="<%= isSaved %>" aria-label="<%= isSaved ? 'Remove from wishlist' : 'Save to wishlist' %>">
+        <i class="<%= isSaved ? 'fa-solid' : 'fa-regular' %> fa-heart"></i>
+      </button>
+    </form>
+  </div>
+  <a href="/listings/<%= cardId %>" class="rn-card-body">
+    <div class="rn-card-row">
+      <h3 class="rn-card-title"><%= listing.title %></h3>
+      <% if (listing.reviewCount) { %>
+        <span class="rn-rating"><i class="fa-solid fa-star"></i> <%= listing.avgRating.toFixed(1) %></span>
+      <% } else { %>
+        <span class="rn-rating rn-rating-new">New</span>
+      <% } %>
+    </div>
+    <p class="rn-card-loc"><i class="fa-solid fa-location-dot"></i> <%= listing.location %>, <%= listing.country %></p>
+    <p class="rn-price">
+      <span class="price-base"><strong>&#8377;<%= nightly.toLocaleString("en-IN") %></strong> <span>/ night</span></span>
+      <span class="price-tax"><strong>&#8377;<%= withGst.toLocaleString("en-IN") %></strong> <span>/ night incl. 18% GST</span></span>
+    </p>
+  </a>
+</article>

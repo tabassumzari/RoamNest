@@ -1,0 +1,99 @@
+<% layout("/layouts/boilerplate.ejs") %>
+<%
+    // Build a /listings URL that keeps the current search/sort/price but swaps the category.
+    const hrefFor = function (cat) {
+        const p = new URLSearchParams();
+        if (cat) p.set("category", cat);
+        if (query) p.set("q", query);
+        if (sort && sort !== "recommended") p.set("sort", sort);
+        if (minPrice) p.set("minPrice", minPrice);
+        if (maxPrice) p.set("maxPrice", maxPrice);
+        const qs = p.toString();
+        return "/listings" + (qs ? "?" + qs : "");
+    };
+    const activeLabel = (categories.find(function (c) { return c.key === activeCategory; }) || {}).label;
+    const hasFilters = Boolean(activeCategory || query || minPrice || maxPrice);
+%>
+
+<!-- ============ Hero ============ -->
+<section class="rn-hero">
+  <div class="container rn-container">
+    <p class="rn-eyebrow">Curated luxury stays</p>
+    <h1>Find your next <em>nest</em></h1>
+    <p class="rn-hero-sub">Beachfront villas, alpine chalets and storybook castles, hand-picked for the way you want to roam.</p>
+  </div>
+</section>
+
+<!-- ============ Category filter bar ============ -->
+<div class="rn-filterbar">
+  <div class="container rn-container">
+    <nav class="rn-cats" aria-label="Filter by category">
+      <a class="rn-cat <%= !activeCategory ? 'active' : '' %>" href="<%= hrefFor('') %>">
+        <i class="fa-solid fa-border-all"></i><span>All stays</span>
+      </a>
+      <% categories.forEach(function (c) { %>
+        <a class="rn-cat <%= activeCategory === c.key ? 'active' : '' %>" href="<%= hrefFor(c.key) %>" <%- activeCategory === c.key ? 'aria-current="true"' : '' %>>
+          <i class="fa-solid <%= c.icon %>"></i><span><%= c.label %></span>
+        </a>
+      <% }) %>
+    </nav>
+  </div>
+</div>
+
+<section class="container rn-container rn-listings">
+
+  <!-- ============ Toolbar: count, price range, sort, tax toggle ============ -->
+  <form class="rn-toolbar" action="/listings" method="GET">
+    <% if (activeCategory) { %><input type="hidden" name="category" value="<%= activeCategory %>"><% } %>
+    <% if (query) { %><input type="hidden" name="q" value="<%= query %>"><% } %>
+
+    <div class="rn-results">
+      <strong><%= allListings.length %></strong> <%= allListings.length === 1 ? "stay" : "stays" %>
+      <% if (activeLabel) { %> in <em><%= activeLabel %></em><% } %>
+      <% if (query) { %> matching &ldquo;<%= query %>&rdquo;<% } %>
+      <% if (hasFilters) { %><a class="rn-clear" href="/listings">Clear filters</a><% } %>
+    </div>
+
+    <div class="rn-tools">
+      <label class="rn-price-range">
+        <span>&#8377;</span>
+        <input type="number" name="minPrice" min="0" placeholder="Min" value="<%= minPrice %>" aria-label="Minimum price per night">
+        <span class="rn-dash">&ndash;</span>
+        <input type="number" name="maxPrice" min="0" placeholder="Max" value="<%= maxPrice %>" aria-label="Maximum price per night">
+        <button type="submit" class="rn-apply">Apply</button>
+      </label>
+
+      <label class="rn-sort">
+        <span class="visually-hidden">Sort by</span>
+        <select name="sort" onchange="this.form.submit()" aria-label="Sort stays">
+          <option value="recommended" <%= sort === "recommended" ? "selected" : "" %>>Recommended</option>
+          <option value="price_asc" <%= sort === "price_asc" ? "selected" : "" %>>Price: low to high</option>
+          <option value="price_desc" <%= sort === "price_desc" ? "selected" : "" %>>Price: high to low</option>
+          <option value="newest" <%= sort === "newest" ? "selected" : "" %>>Newest first</option>
+        </select>
+      </label>
+
+      <label class="rn-switch" for="taxToggle">
+        <input type="checkbox" id="taxToggle" role="switch">
+        <span class="rn-switch-track"></span>
+        <span class="rn-switch-label">Show total with GST</span>
+      </label>
+    </div>
+  </form>
+
+  <!-- ============ Listings grid ============ -->
+  <% if (allListings.length) { %>
+    <div class="rn-grid" id="listingGrid">
+      <% allListings.forEach(function (listing) { %>
+        <%- include("../includes/listing-card.ejs", { listing: listing }) %>
+      <% }) %>
+    </div>
+  <% } else { %>
+    <div class="rn-empty">
+      <i class="fa-regular fa-compass"></i>
+      <h2>No stays match your search</h2>
+      <p>Try a different category, widen your price range or clear the filters.</p>
+      <a class="rn-btn rn-btn-primary" href="/listings">Show all stays</a>
+    </div>
+  <% } %>
+</section>

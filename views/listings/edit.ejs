@@ -1,0 +1,69 @@
+<% layout("/layouts/boilerplate.ejs") %>
+
+<section class="container rn-container rn-form-wrap">
+  <div class="rn-form-card">
+    <p class="rn-eyebrow">Host tools</p>
+    <h1 class="rn-page-title">Edit your listing</h1>
+
+    <form method="POST" action="/listings/<%= listing._id %>?_method=PUT" novalidate class="needs-validation" enctype="multipart/form-data">
+      <div class="mb-4">
+        <label for="title" class="form-label">Title</label>
+        <input id="title" name="listing[title]" value="<%= listing.title %>" type="text" class="form-control" required>
+        <div class="invalid-feedback">Please add a title.</div>
+      </div>
+
+      <div class="mb-4">
+        <label for="description" class="form-label">Description</label>
+        <textarea id="description" name="listing[description]" rows="5" class="form-control" required><%= listing.description %></textarea>
+        <div class="invalid-feedback">Please enter a short description.</div>
+      </div>
+
+      <div class="mb-4">
+        <span class="form-label d-block">Current photo</span>
+        <img class="rn-upload-preview" src="<%= originalImageUrl || '/img/placeholder.svg' %>" alt="Current listing photo">
+      </div>
+
+      <div class="mb-4">
+        <label for="image" class="form-label">Replace photo (optional)</label>
+        <input id="image" name="listing[image]" type="file" accept="image/png,image/jpeg" class="form-control" data-preview="#imagePreview">
+        <img id="imagePreview" class="rn-upload-preview" alt="New photo preview" hidden>
+      </div>
+
+      <div class="row g-3 mb-4">
+        <div class="col-md-6">
+          <label for="category" class="form-label">Category</label>
+          <select id="category" name="listing[category]" class="form-select" required>
+            <option value="" disabled <%= listing.category ? "" : "selected" %>>Choose a category</option>
+            <% categories.forEach(function (c) { %>
+              <option value="<%= c.key %>" <%= listing.category === c.key ? "selected" : "" %>><%= c.label %></option>
+            <% }) %>
+          </select>
+          <div class="invalid-feedback">Please choose a category.</div>
+        </div>
+        <div class="col-md-6">
+          <label for="price" class="form-label">Price per night (&#8377;)</label>
+          <input id="price" name="listing[price]" value="<%= listing.price %>" type="number" min="0" class="form-control" required>
+          <div class="invalid-feedback">Enter a valid price.</div>
+        </div>
+      </div>
+
+      <div class="row g-3 mb-4">
+        <div class="col-md-7">
+          <label for="location" class="form-label">Location</label>
+          <input id="location" name="listing[location]" value="<%= listing.location %>" type="text" class="form-control" required>
+          <div class="invalid-feedback">Please enter a location.</div>
+        </div>
+        <div class="col-md-5">
+          <label for="country" class="form-label">Country</label>
+          <input id="country" name="listing[country]" value="<%= listing.country %>" type="text" class="form-control" required>
+          <div class="invalid-feedback">Please enter a country.</div>
+        </div>
+      </div>
+
+      <div class="rn-form-actions">
+        <a href="/listings/<%= listing._id %>" class="rn-btn rn-btn-ghost">Cancel</a>
+        <button class="rn-btn rn-btn-primary">Save changes</button>
+      </div>
+    </form>
+  </div>
+</section>

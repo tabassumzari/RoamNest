@@ -1,0 +1,57 @@
+<%
+    const navQuery = typeof query !== "undefined" ? query : "";
+    const navUser = typeof currUser !== "undefined" ? currUser : null;
+    const savedCount = typeof wishlistIds !== "undefined" ? wishlistIds.length : 0;
+%>
+<header class="rn-header">
+  <nav class="navbar navbar-expand-lg navbar-dark rn-navbar" aria-label="Main navigation">
+    <div class="container rn-container">
+      <a class="navbar-brand rn-brand" href="/listings" aria-label="RoamNest home">
+        <span class="rn-brand-mark"><i class="fa-regular fa-compass"></i></span>
+        <span class="rn-brand-word">Roam<em>Nest</em></span>
+      </a>
+
+      <button class="navbar-toggler rn-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#rnNav" aria-controls="rnNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <div class="collapse navbar-collapse" id="rnNav">
+        <form class="rn-search" action="/listings" method="GET" role="search">
+          <i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i>
+          <input type="search" name="q" value="<%= navQuery %>" placeholder="Search a city, country or stay" aria-label="Search stays">
+          <button type="submit">Search</button>
+        </form>
+
+        <ul class="navbar-nav rn-nav-links ms-lg-auto align-items-lg-center">
+          <li class="nav-item"><a class="nav-link" href="/listings">Explore</a></li>
+          <% if (navUser) { %>
+            <li class="nav-item">
+              <a class="nav-link rn-nav-wish" href="/wishlist">
+                <i class="fa-regular fa-heart"></i> Wishlist
+                <span class="rn-count" id="wishlistCount" <%= savedCount ? "" : "hidden" %>><%= savedCount %></span>
+              </a>
+            </li>
+          <% } %>
+          <li class="nav-item"><a class="nav-link rn-nav-host" href="/listings/new">List your property</a></li>
+          <% if (!navUser) { %>
+            <li class="nav-item"><a class="nav-link" href="/login">Log in</a></li>
+            <li class="nav-item"><a class="btn rn-btn-gold" href="/signup">Sign up</a></li>
+          <% } else { %>
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle rn-user" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                <span class="rn-avatar"><%= navUser.username.charAt(0).toUpperCase() %></span>
+                <span class="rn-user-name"><%= navUser.username %></span>
+              </a>
+              <ul class="dropdown-menu dropdown-menu-end rn-dropdown">
+                <li><a class="dropdown-item" href="/wishlist"><i class="fa-regular fa-heart"></i> Wishlist</a></li>
+                <li><a class="dropdown-item" href="/listings/new"><i class="fa-solid fa-plus"></i> New listing</a></li>
+                <li><hr class="dropdown-divider"></li>
+                <li><a class="dropdown-item" href="/logout"><i class="fa-solid fa-arrow-right-from-bracket"></i> Log out</a></li>
+              </ul>
+            </li>
+          <% } %>
+        </ul>
+      </div>
+    </div>
+  </nav>
+</header>

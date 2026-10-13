@@ -1,0 +1,26 @@
+<% layout("/layouts/boilerplate.ejs") %>
+
+<section class="rn-page-head">
+  <div class="container rn-container">
+    <p class="rn-eyebrow">Saved by you</p>
+    <h1>Your wishlist</h1>
+    <p class="rn-page-sub"><%= listings.length %> <%= listings.length === 1 ? "place" : "places" %> saved</p>
+  </div>
+</section>
+
+<section class="container rn-container rn-listings">
+  <% if (listings.length) { %>
+    <div class="rn-grid" id="listingGrid" data-removable>
+      <% listings.forEach(function (listing) { %>
+        <%- include("../includes/listing-card.ejs", { listing: listing }) %>
+      <% }) %>
+    </div>
+  <% } else { %>
+    <div class="rn-empty">
+      <i class="fa-regular fa-heart"></i>
+      <h2>Nothing saved yet</h2>
+      <p>Tap the heart on any stay to keep it here for later.</p>
+      <a class="rn-btn rn-btn-primary" href="/listings">Explore stays</a>
+    </div>
+  <% } %>
+</section>
